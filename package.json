@@ -1,6 +1,7 @@
 {
 	"name": "fcc-learn-npm-package-json",
 	"dependencies": {
+		"dotenv": "^8.0.0",
 		"express": "^4.14.0"
 	},
 	"main": "server.js",
@@ -12,6 +13,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://idontknow/todo.git"
+		"url": "https://github.com/mechbullgt/fcc-backend.git"
 	}
 }
