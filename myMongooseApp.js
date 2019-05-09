@@ -109,7 +109,7 @@ var createAndSavePerson = function(done) {
     age:99,
     favoriteFoods:["dal","roti"]
   });
-  oldPerson.save((err,data)=>err? done(err): done(null,data);
+  oldPerson.save((err,data)=>err? done(err): done(null,data));
 };
 
 function handlerCreateAndSavePerson(err,doc){
@@ -120,8 +120,9 @@ function handlerCreateAndSavePerson(err,doc){
   console.log("Success:",doc);
 }
 
-createAndSavePerson(handlerCreateAndSavePerson);
+//createAndSavePerson(handlerCreateAndSavePerson);
 
+/* Below also works but above with callback/promises is the standard way*/
 // var youngPerson = new Person({
 //   name:"Tony",
 //   age:"19",
@@ -143,10 +144,24 @@ createAndSavePerson(handlerCreateAndSavePerson);
 // 'arrayOfPeople'.
 
 var createManyPeople = function(arrayOfPeople, done) {
-    
-    done(null/*, data*/);
-    
+    Person.create(arrayOfPeople,(err,data)=>{
+      if(err) {
+        done(err);
+      }
+      done(null,data);
+    })    
 };
+
+function handlerCreateManyPeople(err,data){
+  if(err){
+    console.log("Error creating many people: ",err);
+    throw err;
+  } 
+  console.log("Success Create()",data);
+};
+
+let obj=[{name:"a",age:1,favoriteFoods:[]},{name:"b",age:2,favoriteFoods:["aam"]}];
+createManyPeople(obj,handlerCreateManyPeople);
 
 /** # C[R]UD part II - READ #
 /*  ========================= */
