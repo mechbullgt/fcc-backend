@@ -161,7 +161,7 @@ function handlerCreateManyPeople(err,data){
 };
 
 let obj=[{name:"a",age:1,favoriteFoods:[]},{name:"b",age:2,favoriteFoods:["aam"]}];
-createManyPeople(obj,handlerCreateManyPeople);
+// createManyPeople(obj,handlerCreateManyPeople);
 
 /** # C[R]UD part II - READ #
 /*  ========================= */
@@ -175,10 +175,23 @@ createManyPeople(obj,handlerCreateManyPeople);
 // Use the function argument `personName` as search key.
 
 var findPeopleByName = function(personName, done) {
-  
-  done(null/*, data*/);
-
+  Person.find({name:personName},(err,data)=>{
+    if(err){
+      done(err);
+    }
+    done(null, data);
+  })
 };
+
+function handlerFindPeopleByName(err,data){
+  if(err){
+    console.log("Error finding people by name:",err);
+    throw err;
+  }
+  console.log("Search Success! Found "+data.length+" results:",data);
+}
+
+findPeopleByName("Tony",handlerFindPeopleByName);
 
 /** 6) Use `Model.findOne()` */
 
