@@ -457,9 +457,23 @@
 
   var queryChain = function (done) {
     var foodToSearch = "burrito";
-
-    done(null/*, data*/);
+        let query = Person.find({favoriteFoods:foodToSearch});
+        query.sort({name:1});
+        query.limit(2);
+        query.select({name:1});
+        query.exec((err,pass)=>{
+          if(err) done(err);
+          done(null, pass);
+        });
+      };
+  function handlerQueryChain(err, data){
+    if(err) {
+      console.log("Error occured in query chain: ",err);
+    } 
+    console.log("Success Query Chain: ",data);
   };
+
+  queryChain(handlerQueryChain);
 
   /** **Well Done !!**
   /* You completed these challenges, let's go celebrate !
