@@ -15,21 +15,21 @@ var Schema = mongoose.Schema;
 // `mongoose`. Store your **mLab** database URI in the private `.env` file 
 // as `MONGO_URI`. Connect to the database using `mongoose.connect(<Your URI>)`
 console.log('process.env.MONGO_URI :', process.env.MONGO_URI);
-mongoose.connect(process.env.MONGO_URI,{useNewUrlParser:true});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
 
 var db = mongoose.connection;
 // On Connection Error
-db.on('error',(err)=>{
-console.error("MongoDB Connection Error: ",err);
+db.on('error', (err) => {
+  console.error("MongoDB Connection Error: ", err);
 });
 
 // On Connection Success
-db.on('connected',()=>{
+db.on('connected', () => {
   console.log("MongoDb Connection Established!");
 });
 
 // On Connection Disconnet
-db.on('disconnected',()=>{
+db.on('disconnected', () => {
   console.log("MongoDb Connection disconnected");
 })
 
@@ -56,17 +56,40 @@ db.on('disconnected',()=>{
 // fields, use simple validators like `required` or `unique`, and set
 // `default` values. See the [mongoose docs](http://mongoosejs.com/docs/guide.html).
 
+// /* Comments as fcc creates data on the database to validate the test results, and unique field was not asked as a part of the problem*/
+// var personSchema = new Schema({
+//   name: {
+//     type: String,
+//     unique: true,
+//     sparse:true
+//   },
+//   age: Number,
+//   favoriteFoods: {
+//     type: Array,
+//     items: {
+//       type: String
+//     }
+//   }
+// });
+
 var personSchema = new Schema({
   name: {
-    type:String,
-    unique:true
+    type: String
   },
   age: Number,
-  favoriteFoods: Array
+  favoriteFoods: {
+    type: Array,
+    items: {
+      type: String
+    }
+  }
 });
 
+
 // Instantiated a person object/document from the model factory
-var Person = mongoose.model('Person',personSchema,'Persons');
+// var Person = mongoose.model('Person', personSchema, 'Persons');
+ var Person = mongoose.model('Person', personSchema, 'Persons');
+
 
 // **Note**: GoMix is a real server, and in real servers interactions with
 // the db are placed in handler functions, to be called when some event happens
@@ -103,21 +126,21 @@ var Person = mongoose.model('Person',personSchema,'Persons');
 //    ...do your stuff here...
 // });
 
-var createAndSavePerson = function(done) {
+var createAndSavePerson = function (done) {
   var oldPerson = new Person({
     name: "Shayam Lal Ji",
-    age:99,
-    favoriteFoods:["dal","roti"]
+    age: 99,
+    favoriteFoods: ["dal", "roti"]
   });
-  oldPerson.save((err,data)=>err? done(err): done(null,data));
+  oldPerson.save((err, data) => err ? done(err) : done(null, data));
 };
 
-function handlerCreateAndSavePerson(err,doc){
-  if(err) {
-    console.log("Error from handler: ",err);
+function handlerCreateAndSavePerson(err, doc) {
+  if (err) {
+    console.log("Error from handler: ", err);
     throw err;
   }
-  console.log("Success:",doc);
+  console.log("Success:", doc);
 }
 
 //createAndSavePerson(handlerCreateAndSavePerson);
@@ -143,25 +166,26 @@ function handlerCreateAndSavePerson(err,doc){
 // Create many people using `Model.create()`, using the function argument
 // 'arrayOfPeople'.
 
-var createManyPeople = function(arrayOfPeople, done) {
-    Person.create(arrayOfPeople,(err,data)=>{
-      if(err) {
-        done(err);
-      }
-      done(null,data);
-    })    
+var createManyPeople = function (arrayOfPeople, done) {
+  Person.create(arrayOfPeople, (err, data) => {
+    if (err) {
+      done(err);
+    }
+    done(null, data);
+  })
 };
 
-function handlerCreateManyPeople(err,data){
-  if(err){
-    console.log("Error creating many people: ",err);
+function handlerCreateManyPeople(err, data) {
+  if (err) {
+    console.log("Error creating many people: ", err);
     throw err;
-  } 
-  console.log("Success Create()",data);
+  }
+  console.log("Success Create()", data);
 };
 
-let obj=[{name:"a",age:1,favoriteFoods:[]},{name:"b",age:2,favoriteFoods:["aam"]}];
-// createManyPeople(obj,handlerCreateManyPeople);
+let obj = [{ name: "Sony", age: 12, favoriteFoods: ["cake"] }, { name: "Kony", age: 23, favoriteFoods: ["roll"] }];
+
+//createManyPeople(obj,handlerCreateManyPeople);
 
 /** # C[R]UD part II - READ #
 /*  ========================= */
@@ -174,24 +198,24 @@ let obj=[{name:"a",age:1,favoriteFoods:[]},{name:"b",age:2,favoriteFoods:["aam"]
 // It supports an extremely wide range of search options. Check it in the docs.
 // Use the function argument `personName` as search key.
 
-var findPeopleByName = function(personName, done) {
-  Person.find({name:personName},(err,data)=>{
-    if(err){
+var findPeopleByName = function (personName, done) {
+  Person.find({ name: personName }, (err, data) => {
+    if (err) {
       done(err);
     }
     done(null, data);
   })
 };
 
-function handlerFindPeopleByName(err,data){
-  if(err){
-    console.log("Error finding people by name:",err);
+function handlerFindPeopleByName(err, data) {
+  if (err) {
+    console.log("Error finding people by name:", err);
     throw err;
   }
-  console.log("Search Success! Found "+data.length+" results:",data);
+  console.log("Search Success! Found " + data.length + " results:", data);
 }
 
-findPeopleByName("Tony",handlerFindPeopleByName);
+//findPeopleByName("Tony",handlerFindPeopleByName);
 
 /** 6) Use `Model.findOne()` */
 
@@ -202,11 +226,27 @@ findPeopleByName("Tony",handlerFindPeopleByName);
 // using `Model.findOne() -> Person`. Use the function
 // argument `food` as search key
 
-var findOneByFood = function(food, done) {
-
-  done(null/*, data*/);
-  
+var findOneByFood = function (food, done) {
+  Person.findOne({ favoriteFoods: food }, (err, data) => {
+    if (err) {
+      done(err);
+    }
+    done(data);
+  });
 };
+
+function handlerFindOneByFood(err, data) {
+  try {
+    if (err) {
+      throw err;
+    }
+    console.log("Success finding one by food! Result: ", data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+findOneByFood('bake', handlerFindOneByFood);
 
 /** 7) Use `Model.findById()` */
 
@@ -217,10 +257,10 @@ var findOneByFood = function(food, done) {
 // using `Model.findById() -> Person`.
 // Use the function argument 'personId' as search key.
 
-var findPersonById = function(personId, done) {
-  
+var findPersonById = function (personId, done) {
+
   done(null/*, data*/);
-  
+
 };
 
 /** # CR[U]D part III - UPDATE # 
@@ -248,9 +288,9 @@ var findPersonById = function(personId, done) {
 // manually mark it as edited using `document.markModified('edited-field')`
 // (http://mongoosejs.com/docs/schematypes.html - #Mixed )
 
-var findEditThenSave = function(personId, done) {
+var findEditThenSave = function (personId, done) {
   var foodToAdd = 'hamburger';
-  
+
   done(null/*, data*/);
 };
 
@@ -269,7 +309,7 @@ var findEditThenSave = function(personId, done) {
 // to `findOneAndUpdate()`. By default the method
 // passes the unmodified object to its callback.
 
-var findAndUpdate = function(personName, done) {
+var findAndUpdate = function (personName, done) {
   var ageToSet = 20;
 
   done(null/*, data*/);
@@ -285,10 +325,10 @@ var findAndUpdate = function(personName, done) {
 // previous update methods. They pass the removed document to the cb.
 // As usual, use the function argument `personId` as search key.
 
-var removeById = function(personId, done) {
-  
+var removeById = function (personId, done) {
+
   done(null/*, data*/);
-    
+
 };
 
 /** 11) Delete many People */
@@ -301,7 +341,7 @@ var removeById = function(personId, done) {
 // containing the outcome of the operation, and the number of items affected.
 // Don't forget to pass it to the `done()` callback, since we use it in tests.
 
-var removeManyPeople = function(done) {
+var removeManyPeople = function (done) {
   var nameToRemove = "Mary";
 
   done(null/*, data*/);
@@ -325,9 +365,9 @@ var removeManyPeople = function(done) {
 // Chain `.find()`, `.sort()`, `.limit()`, `.select()`, and then `.exec()`,
 // passing the `done(err, data)` callback to it.
 
-var queryChain = function(done) {
+var queryChain = function (done) {
   var foodToSearch = "burrito";
-  
+
   done(null/*, data*/);
 };
 
