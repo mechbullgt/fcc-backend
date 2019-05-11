@@ -377,11 +377,37 @@ function handlerFindAndUpdate(err, data){
 // previous update methods. They pass the removed document to the cb.
 // As usual, use the function argument `personId` as search key.
 
+// var removeById = function (personId, done) {
+//   Person.findById(personId, (err,data)=>{
+//     if(err) done(err);
+//     if(data != null){
+//       console.log("Person found: ", data);
+//       console.log("Deleting user: ", data.name);
+//       Person.findByIdAndDelete(personId,(err,data)=>{
+//         if(err) done(err);
+//         console.log("Deleted user");
+//       });      
+//     }
+//     console.log("Person not found");
+//   });
+// };
+
 var removeById = function (personId, done) {
-
-  done(null/*, data*/);
-
+  Person.findByIdAndDelete(personId, (err,data)=>{
+    if(err) done(err);      
+    done(null, data);
+  });
 };
+
+function handlerRemoveById (err, data){
+  if(err){
+    console.log("Erro while remove by id: ",err);
+    throw err;
+  }
+  console.log("Success removeById: ",data);
+}
+
+// removeById("5cd60b3cb6a5fb241fc76cab",handlerRemoveById);
 
 /** 11) Delete many People */
 
