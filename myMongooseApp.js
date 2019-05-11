@@ -323,7 +323,7 @@ function handlerFindEditThenSave(err, data){
   console.log("Success findEditThenSave: ",data);
 }
 
-findEditThenSave("5cd60ae0685f645d112dd408",handlerFindEditThenSave);
+// findEditThenSave("5cd60ae0685f645d112dd408",handlerFindEditThenSave);
 
 /** 9) New Update : Use `findOneAndUpdate()` */
 
@@ -342,9 +342,30 @@ findEditThenSave("5cd60ae0685f645d112dd408",handlerFindEditThenSave);
 
 var findAndUpdate = function (personName, done) {
   var ageToSet = 20;
-
-  done(null/*, data*/);
+  Person.findOne({name:personName},(err,data)=>{
+    if(err) done(err);
+    console.log("Data found: ",data);
+    let currentAge = data.age;
+    console.log('currentAge :', currentAge);  
+    data.age = ageToSet;
+    console.log('updatedAge :', data.age);  
+    data.save((err, data)=>{
+      if(err) done(err);
+      done(null, data);
+    });
+  });
 };
+
+function handlerFindAndUpdate(err, data){
+  if(err){
+    console.log("Error while findOneAndUpdate: ",err);
+    throw err;
+  }
+  console.log("Success while findOneAndUpdate:",data);
+};
+
+//findAndUpdate("Kony",handlerFindAndUpdate,{new: true});
+// findAndUpdate("Gary",handlerFindAndUpdate);
 
 /** # CRU[D] part IV - DELETE #
 /*  =========================== */
