@@ -272,7 +272,7 @@ function handlerFindPersonById (err, data){
   console.log("Success mode.findById: ",data);
 };
 
-findPersonById("5cd60ae0685f645d112dd408",handlerFindPersonById);
+// findPersonById("5cd60ae0685f645d112dd408",handlerFindPersonById);
 
 /** # CR[U]D part III - UPDATE # 
 /*  ============================ */
@@ -301,9 +301,29 @@ findPersonById("5cd60ae0685f645d112dd408",handlerFindPersonById);
 
 var findEditThenSave = function (personId, done) {
   var foodToAdd = 'hamburger';
-
-  done(null/*, data*/);
+  Person.findById(personId,(err,data)=>{
+    if(err) done(err);
+    // adding the food
+    let foodArray = data['favoriteFoods'];
+    console.log('foodArray :', foodArray);
+    foodArray.push(foodToAdd);
+    data['favoriteFoods']=foodArray;
+    data.save((err,succ)=>{
+      if(err) done(err);
+      done(null, succ);
+    });
+  });
 };
+
+function handlerFindEditThenSave(err, data){
+  if(err){
+    console.log("Error in findEditThenSave: ",err);
+    throw err;
+  }
+  console.log("Success findEditThenSave: ",data);
+}
+
+findEditThenSave("5cd60ae0685f645d112dd408",handlerFindEditThenSave);
 
 /** 9) New Update : Use `findOneAndUpdate()` */
 
